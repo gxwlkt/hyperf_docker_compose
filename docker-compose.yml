@@ -2,9 +2,9 @@ version: '3'
 services:
   # hyperf
   hyperf:
-    image: zhaohao19941221/php_swoole_redis_mysql:${HYPERF_VERSION}
+    image: hyperf/hyperf:${HYPERF_VERSION}
     hostname: hyperf
-    container_name: zh_hyperf
+    container_name: hyperf-compose
     restart: always
     privileged: true
     ports:
@@ -12,11 +12,11 @@ services:
     links:
       - mysql
       - redis
-      - phpmyadmin
-      - rabbitmq
-      - memcached
+#      - phpmyadmin
+#      - rabbitmq
+#      - memcached
     volumes:
-      - ${HYPERF_WORK_DIR}:/hyperf-skeleton
+      - ${HYPERF_WORK_DIR}:/data/project/
     tty: true
     networks:
       - hyperf_networks
@@ -32,8 +32,7 @@ services:
     ports:
       - '${MYSQL_HOST_PORT}:3306'
     volumes:
-      - ${MYSQL_CONF_FILE}:/etc/mysql/my.cnf
-      - ${MYSQL_DATA_DIR}:/var/lib/mysql
+      - ${MYSQL_CONF_FILE}:/etc/mysql/conf.d
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
@@ -55,46 +54,5 @@ services:
     networks:
       - hyperf_networks
 
-  # phpmyadmin
-  phpmyadmin:
-    container_name: zh_phpmyadmin
-    hostname: phpmyadmin
-    image: phpmyadmin/phpmyadmin:latest
-    ports:
-      - '${PHPMYADMIN_HOST_PORT}:80'
-    environment:
-      - PMA_HOST=mysql
-      - PMA_PORT=3306
-    networks:
-      - hyperf_networks
-
-  ##rabbitmq
-  rabbitmq:
-    image: rabbitmq:${RABBITMQ_VERSION}
-    hostname: rabbitmq
-    container_name: zh_rabbitmq
-    ports:
-      # Modify the configuration as needed. Port mapping to external port: docker internal port
-      - "4369:4369"
-      - "5671:5671"
-      - "5672:5672"
-      - "15671:15671"
-      - "15672:15672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-    volumes:
-      - ${RABBITMQ_DATA_DIR}:/bitnami
-    networks:
-      - hyperf_networks
-  ## memcached
-  memcached:
-    image: memcached:${MEMCACHED_VERSION}
-    hostname: mamcached
-    container_name: zh_memcached
-    ports:
-      - "${MEMCACHED_HOST_PORT}:11211"
-    networks:
-      - hyperf_networks
 networks:
   hyperf_networks:
